@@ -13,6 +13,17 @@
 #define MAX(a,b) (a>b?a:b)
 #define MIN(a,b) (a<b?a:b)
 
+#define MINWIDTH 0
+#define MINHEIGHT 0
+
+#define VC_CH_1 1
+#define VC_CH_2 2
+#define VC_CH_3 3
+
+#define GRAYLEVELS 256
+
+#define SIZEOFUCHAR 255
+
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>

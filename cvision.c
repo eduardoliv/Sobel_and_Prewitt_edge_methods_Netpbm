@@ -31,53 +31,53 @@ int vc_gray_edge_sobel(IVC *src, IVC *dst, float th)
 	int height = src->height;
 	int bytesperline = src->bytesperline;
 	int x, y, i, posA, posB, posC, posD, posX, posE, posF, posG, posH, sumx, sumy, histmax, histthreshold;
-	int hist[256] = {0};
+	int hist[GRAYLEVELS] = {0};
 
 	// Error check
-	if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL))
+	if ((src->width <= MINWIDTH) || (src->height <= MINHEIGHT))
 		return 0;
-	if ((dst->width <= 0) || (dst->height <= 0) || (dst->data == NULL))
+	if ((dst->width <= MINWIDTH) || (dst->height <= MINHEIGHT))
 		return 0;
-	if ((src->channels != 1) || (dst->channels != 1))
+	if ((src->channels != VC_CH_1) || (dst->channels != VC_CH_1))
 		return 0;
 
 	// Get the number of pixels of the image w*h
 	int size = width * height;
 
-	// Apply the operators in x and y axis, and calculate the magnitude of the vector
+	// Apply the operators in x and y axis (gradient), and calculate the magnitude of the vector
 	for (y = 1; y < height - 1; y++)
 	{
 		for (x = 1; x < width - 1; x++)
 		{
-			posA = (y - 1) * bytesperline + (x - 1) * channels;
-			posB = (y - 1) * bytesperline + x * channels;
-			posC = (y - 1) * bytesperline + (x + 1) * channels;
-			posD = y * bytesperline + (x - 1) * channels;
-			posX = y * bytesperline + x * channels;
-			posE = y * bytesperline + (x + 1) * channels;
-			posF = (y + 1) * bytesperline + (x - 1) * channels;
-			posG = (y + 1) * bytesperline + x * channels;
-			posH = (y + 1) * bytesperline + (x + 1) * channels;
+			posA = (y - 1) * bytesperline + (x - 1);
+			posB = (y - 1) * bytesperline + x;
+			posC = (y - 1) * bytesperline + (x + 1);
+			posD = y * bytesperline + (x - 1);
+			posX = y * bytesperline + x;
+			posE = y * bytesperline + (x + 1);
+			posF = (y + 1) * bytesperline + (x - 1);
+			posG = (y + 1) * bytesperline + x;
+			posH = (y + 1) * bytesperline + (x + 1);
 
 			// Derivative of xx axis
 			sumx = datasrc[posA] * -1;
 			sumx += datasrc[posD] * -2;
 			sumx += datasrc[posF] * -1;
 
-			sumx += datasrc[posC] * +1;
-			sumx += datasrc[posE] * +2;
-			sumx += datasrc[posH] * +1;
-			sumx = sumx / 4;
+			sumx += datasrc[posC] * 1;
+			sumx += datasrc[posE] * 2;
+			sumx += datasrc[posH] * 1;
+			sumx /= 4.0f;
 
 			// Derivative of yy axis
 			sumy = datasrc[posA] * -1;
 			sumy += datasrc[posB] * -2;
 			sumy += datasrc[posC] * -1;
 
-			sumy += datasrc[posF] * +1;
-			sumy += datasrc[posG] * +2;
-			sumy += datasrc[posH] * +1;
-			sumy = sumy / 4;
+			sumy += datasrc[posF] * 1;
+			sumy += datasrc[posG] * 2;
+			sumy += datasrc[posH] * 1;
+			sumy /= 4.0f;
 
 			// Calculate the magnitude of the vector
 			datadst[posX] = (unsigned char)sqrt((double)(sumx * sumx + sumy * sumy));
@@ -87,19 +87,18 @@ int vc_gray_edge_sobel(IVC *src, IVC *dst, float th)
 	// Compute a grey level histogram
 	for (y = 1; y < height; y++)
 		for (x = 1; x < width; x++)
-			hist[datadst[y * bytesperline + x * channels]]++;
+			hist[datadst[y * bytesperline + x]]++;
 
 	/** Find the threshold
 	 * Threshold is defined by the intensity when we reach a desired percentage of pixels
 	*/
 	histmax = 0;
-	for (i = 0; i < 256; i++)
+	for (i = 0; i < GRAYLEVELS; i++)
 	{
 		histmax += hist[i];
 
-		// th = Prewitt Threshold
-		if (histmax >= (((float)size) * th))
-			break;
+		// th = Sobel Threshold
+		if (histmax >= (size * th)) break;
 	}
 	histthreshold = i;
 
@@ -107,9 +106,9 @@ int vc_gray_edge_sobel(IVC *src, IVC *dst, float th)
 	for (y = 1; y < height; y++)
 		for (x = 1; x < width; x++)
 		{
-			posX = y * bytesperline + x * channels;
+			posX = y * bytesperline + x;
 			if (datadst[posX] >= histthreshold)
-				datadst[posX] = 255;
+				datadst[posX] = SIZEOFUCHAR;
 			else
 				datadst[posX] = 0;
 		}
@@ -134,33 +133,33 @@ int vc_gray_edge_prewitt(IVC *src, IVC *dst, float th)
 	int height = src->height;
 	int bytesperline = src->bytesperline;
 	int x, y, i, posA, posB, posC, posD, posX, posE, posF, posG, posH, sumx, sumy, histmax, histthreshold;
-	int hist[256] = {0};
+	int hist[GRAYLEVELS] = {0};
 
 	// Error check
-	if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL))
+	if ((src->width <= MINWIDTH) || (src->height <= MINHEIGHT))
 		return 0;
-	if ((dst->width <= 0) || (dst->height <= 0) || (dst->data == NULL))
+	if ((dst->width <= MINWIDTH) || (dst->height <= MINHEIGHT))
 		return 0;
-	if ((src->channels != 1) || (dst->channels != 1))
+	if ((src->channels != VC_CH_1) || (dst->channels != VC_CH_1))
 		return 0;
 
 	// Get the number of pixels of the image w*h
 	int size = width * height;
 
-	// Apply the operators in x and y axis, and calculate the magnitude of the vector
+	// Apply the operators in x and y axis (gradient), and calculate the magnitude of the vector
 	for (y = 1; y < height - 1; y++)
 	{
 		for (x = 1; x < width - 1; x++)
 		{
-			posA = (y - 1) * bytesperline + (x - 1) * channels;
-			posB = (y - 1) * bytesperline + x * channels;
-			posC = (y - 1) * bytesperline + (x + 1) * channels;
-			posD = y * bytesperline + (x - 1) * channels;
-			posX = y * bytesperline + x * channels;
-			posE = y * bytesperline + (x + 1) * channels;
-			posF = (y + 1) * bytesperline + (x - 1) * channels;
-			posG = (y + 1) * bytesperline + x * channels;
-			posH = (y + 1) * bytesperline + (x + 1) * channels;
+			posA = (y - 1) * bytesperline + (x - 1);
+			posB = (y - 1) * bytesperline + x;
+			posC = (y - 1) * bytesperline + (x + 1);
+			posD = y * bytesperline + (x - 1);
+			posX = y * bytesperline + x;
+			posE = y * bytesperline + (x + 1);
+			posF = (y + 1) * bytesperline + (x - 1);
+			posG = (y + 1) * bytesperline + x;
+			posH = (y + 1) * bytesperline + (x + 1);
 
 			// Derivative of xx axis
 			sumx = datasrc[posA] * -1;
@@ -170,7 +169,7 @@ int vc_gray_edge_prewitt(IVC *src, IVC *dst, float th)
 			sumx += datasrc[posC] * +1;
 			sumx += datasrc[posE] * +1;
 			sumx += datasrc[posH] * +1;
-			sumx = sumx / 3;
+			sumx /= 3.0f;
 
 			// Derivative of yy axis
 			sumy = datasrc[posA] * -1;
@@ -180,7 +179,7 @@ int vc_gray_edge_prewitt(IVC *src, IVC *dst, float th)
 			sumy += datasrc[posF] * +1;
 			sumy += datasrc[posG] * +1;
 			sumy += datasrc[posH] * +1;
-			sumy = sumy / 3;
+			sumy /= 3.0f;
 
 			// Calculate the magnitude of the vector
 			datadst[posX] = (unsigned char)sqrt((double)(sumx * sumx + sumy * sumy));
@@ -190,19 +189,18 @@ int vc_gray_edge_prewitt(IVC *src, IVC *dst, float th)
 	// Compute a grey level histogram
 	for (y = 1; y < height; y++)
 		for (x = 1; x < width; x++)
-			hist[datadst[y * bytesperline + x * channels]]++;
+			hist[datadst[y * bytesperline + x]]++;
 
 	/** Find the threshold
 	 * Threshold is defined by the intensity when we reach a desired percentage of pixels
 	*/
 	histmax = 0;
-	for (i = 0; i < 256; i++)
+	for (i = 0; i < GRAYLEVELS; i++)
 	{
 		histmax += hist[i];
 
 		// th = Prewitt Threshold
-		if (histmax >= (((float)size) * th))
-			break;
+		if (histmax >= (size * th)) break;
 	}
 	histthreshold = i;
 
@@ -212,7 +210,7 @@ int vc_gray_edge_prewitt(IVC *src, IVC *dst, float th)
 		{
 			posX = y * bytesperline + x * channels;
 			if (datadst[posX] >= histthreshold)
-				datadst[posX] = 255;
+				datadst[posX] = SIZEOFUCHAR;
 			else
 				datadst[posX] = 0;
 		}
@@ -245,11 +243,11 @@ int vc_rgb_to_gray(IVC *src, IVC *dst)
 	float rf, gf, bf;
 
 	// Error check
-	if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL))
+	if ((src->width <= MINWIDTH) || (src->height <= MINHEIGHT))
 		return 0;
 	if ((src->width != dst->width) || (src->height != dst->height))
 		return 0;
-	if ((src->channels != 3) || (dst->channels != 1))
+	if ((src->channels != VC_CH_3) || (dst->channels != VC_CH_1))
 		return 0;
 
 	// Convert image to gray scale
@@ -258,7 +256,7 @@ int vc_rgb_to_gray(IVC *src, IVC *dst)
 		for (x = 0; x < width; x++)
 		{
 			pos_src = y * bytesPerLine_src + x * channels_src;
-			pos_dst = y * bytesPerLine_dst + x * channels_dst;
+			pos_dst = y * bytesPerLine_dst + x;
 
 			rf = (float)datasrc[pos_src];
 			gf = (float)datasrc[pos_src + 1];
@@ -286,10 +284,8 @@ IVC *vc_image_new(int width, int height, int channels, int levels)
 {
 	IVC *image = (IVC *)malloc(sizeof(IVC));
 
-	if (image == NULL)
-		return NULL;
-	if ((levels <= 0) || (levels > 255))
-		return NULL;
+	if (image == NULL) return NULL;
+	if ((levels <= 0) || (levels > SIZEOFUCHAR)) return NULL;
 
 	image->width = width;
 	image->height = height;
@@ -314,13 +310,9 @@ IVC *vc_image_free(IVC *image)
 	if (image != NULL)
 	{
 		if (image->data != NULL)
-		{
 			free(image->data);
-			image->data = NULL;
-		}
 
 		free(image);
-		image = NULL;
 	}
 
 	return image;
@@ -444,13 +436,13 @@ IVC *vc_read_image(char *filename)
 	char tok[20];
 	long int size, sizeofbinarydata;
 	int width, height, channels;
-	int levels = 255;
+	int levels = SIZEOFUCHAR;
 	int v;
 
-	// Open file
+	// Abre o ficheiro
 	if ((file = fopen(filename, "rb")) != NULL)
 	{
-		// Read header
+		// Efectua a leitura do header
 		netpbm_get_token(file, tok, sizeof(tok));
 
 		if (strcmp(tok, "P4") == 0)
@@ -485,7 +477,7 @@ IVC *vc_read_image(char *filename)
 				return NULL;
 			}
 
-			// Image memory alloc
+			// Aloca mem�ria para imagem
 			image = vc_image_new(width, height, channels, levels);
 			if (image == NULL)
 				return NULL;
@@ -515,7 +507,7 @@ IVC *vc_read_image(char *filename)
 
 			free(tmp);
 		}
-		else // PGM or PPM
+		else // PGM ou PPM
 		{
 			if (sscanf(netpbm_get_token(file, tok, sizeof(tok)), "%d", &width) != 1 ||
 				sscanf(netpbm_get_token(file, tok, sizeof(tok)), "%d", &height) != 1 ||
@@ -529,7 +521,7 @@ IVC *vc_read_image(char *filename)
 				return NULL;
 			}
 
-			// Image memory alloc
+			// Aloca mem�ria para imagem
 			image = vc_image_new(width, height, channels, levels);
 			if (image == NULL)
 				return NULL;
@@ -576,8 +568,7 @@ int vc_write_image(char *filename, IVC *image)
 	unsigned char *tmp;
 	long int totalbytes, sizeofbinarydata;
 
-	if (image == NULL)
-		return 0;
+	if (!image) return 0;
 
 	if ((file = fopen(filename, "wb")) != NULL)
 	{
