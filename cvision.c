@@ -447,13 +447,13 @@ IVC *vc_read_image(char *filename)
 
 		if (strcmp(tok, "P4") == 0)
 		{
-			channels = 1;
+			channels = VC_CH_1;
 			levels = 1;
 		} // Se PBM (Binary [0,1])
 		else if (strcmp(tok, "P5") == 0)
-			channels = 1; // Se PGM (Gray [0,MAX(level,255)])
+			channels = VC_CH_1; // Se PGM (Gray [0,MAX(level,255)])
 		else if (strcmp(tok, "P6") == 0)
-			channels = 3; // Se PPM (RGB [0,MAX(level,255)])
+			channels = VC_CH_3; // Se PPM (RGB [0,MAX(level,255)])
 		else
 		{
 #ifdef VC_DEBUG
@@ -479,13 +479,11 @@ IVC *vc_read_image(char *filename)
 
 			// Aloca mem�ria para imagem
 			image = vc_image_new(width, height, channels, levels);
-			if (image == NULL)
-				return NULL;
+			if (!image) return NULL;
 
 			sizeofbinarydata = (image->width / 8 + ((image->width % 8) ? 1 : 0)) * image->height;
 			tmp = (unsigned char *)malloc(sizeofbinarydata);
-			if (tmp == NULL)
-				return 0;
+			if (!tmp) return 0;
 
 #ifdef VC_DEBUG
 			printf("\nchannels=%d w=%d h=%d levels=%d\n", image->channels, image->width, image->height, levels);
@@ -523,8 +521,7 @@ IVC *vc_read_image(char *filename)
 
 			// Aloca mem�ria para imagem
 			image = vc_image_new(width, height, channels, levels);
-			if (image == NULL)
-				return NULL;
+			if (!image) return NULL;
 
 #ifdef VC_DEBUG
 			printf("\nchannels=%d w=%d h=%d levels=%d\n", image->channels, image->width, image->height, levels);
@@ -576,8 +573,7 @@ int vc_write_image(char *filename, IVC *image)
 		{
 			sizeofbinarydata = (image->width / 8 + ((image->width % 8) ? 1 : 0)) * image->height + 1;
 			tmp = (unsigned char *)malloc(sizeofbinarydata);
-			if (tmp == NULL)
-				return 0;
+			if (!tmp) return 0;
 
 			fprintf(file, "%s %d %d\n", "P4", image->width, image->height);
 
