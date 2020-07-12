@@ -438,21 +438,20 @@ IVC *vc_read_image(char *filename)
 	int levels = SIZEOFUCHAR;
 	int v;
 
-	// Abre o ficheiro
 	if ((file = fopen(filename, "rb")) != NULL)
 	{
-		// Efectua a leitura do header
+		// Header reading
 		netpbm_get_token(file, tok, sizeof(tok));
 
 		if (strcmp(tok, "P4") == 0)
 		{
 			channels = VC_CH_1;
 			levels = 1;
-		} // Se PBM (Binary [0,1])
+		} // If PBM (Binary [0,1])
 		else if (strcmp(tok, "P5") == 0)
-			channels = VC_CH_1; // Se PGM (Gray [0,MAX(level,255)])
+			channels = VC_CH_1; // If PGM (Gray [0,MAX(level,255)])
 		else if (strcmp(tok, "P6") == 0)
-			channels = VC_CH_3; // Se PPM (RGB [0,MAX(level,255)])
+			channels = VC_CH_3; // If PPM (RGB [0,MAX(level,255)])
 		else
 		{
 #ifdef VC_DEBUG
@@ -476,7 +475,7 @@ IVC *vc_read_image(char *filename)
 				return NULL;
 			}
 
-			// Aloca mem�ria para imagem
+			// Image memory alloc
 			image = vc_image_new(width, height, channels, levels);
 			if (!image) return NULL;
 
@@ -504,7 +503,7 @@ IVC *vc_read_image(char *filename)
 
 			free(tmp);
 		}
-		else // PGM ou PPM
+		else // PGM or PPM
 		{
 			if (sscanf(netpbm_get_token(file, tok, sizeof(tok)), "%d", &width) != 1 ||
 				sscanf(netpbm_get_token(file, tok, sizeof(tok)), "%d", &height) != 1 ||
@@ -518,7 +517,7 @@ IVC *vc_read_image(char *filename)
 				return NULL;
 			}
 
-			// Aloca mem�ria para imagem
+			// Image memory alloc
 			image = vc_image_new(width, height, channels, levels);
 			if (!image) return NULL;
 
