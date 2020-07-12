@@ -208,7 +208,7 @@ int vc_gray_edge_prewitt(IVC *src, IVC *dst, float th)
 	for (y = 1; y < height; y++)
 		for (x = 1; x < width; x++)
 		{
-			posX = y * bytesperline + x * channels;
+			posX = y * bytesperline + x;
 			if (datadst[posX] >= histthreshold)
 				datadst[posX] = SIZEOFUCHAR;
 			else
@@ -284,7 +284,7 @@ IVC *vc_image_new(int width, int height, int channels, int levels)
 {
 	IVC *image = (IVC *)malloc(sizeof(IVC));
 
-	if (image == NULL) return NULL;
+	if (!image) return NULL;
 	if ((levels <= 0) || (levels > SIZEOFUCHAR)) return NULL;
 
 	image->width = width;
@@ -294,8 +294,7 @@ IVC *vc_image_new(int width, int height, int channels, int levels)
 	image->bytesperline = image->width * image->channels;
 	image->data = (unsigned char *)malloc(image->width * image->height * image->channels * sizeof(char));
 
-	if (image->data == NULL)
-		return vc_image_free(image);
+	if (!image->data) return vc_image_free(image);
 
 	return image;
 }
