@@ -1,5 +1,5 @@
-# Sobel_and_Prewitt_edging_methods_Netpbm
-Minimal Image Library for Computer Vision - Sobel and Prewitt edging methods example for Netpbm images
+# Sobel_and_Prewitt_edge_methods_Netpbm
+Minimal Image Library for Computer Vision - Sobel and Prewitt edge methods example for Netpbm images
 
 <img src="https://user-images.githubusercontent.com/49571967/87052481-bf138880-c1f8-11ea-9224-a76cc4cbab88.jpg" width="45%"></img> 
 <img src="https://user-images.githubusercontent.com/49571967/87052478-bde25b80-c1f8-11ea-9d52-4778ca699e80.jpg" width="45%"></img> 
