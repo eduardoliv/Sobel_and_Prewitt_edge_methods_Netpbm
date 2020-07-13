@@ -4,7 +4,7 @@
  * @email eduardo.oliveira@ieee.org; 
  * @create date 13-02-2020 12:00:36
  * @modify date 21-04-2020 12:36:00
- * @desc Minimal Image Library for Computer Vision - Sobel and Prewitt edging methods example for Netpbm images
+ * @desc Minimal Image Library for Computer Vision - Sobel and Prewitt edge methods example for Netpbm images
  * @version 0.1.2
  */
 
