@@ -5,11 +5,11 @@ Minimal Image Library for Computer Vision - Sobel and Prewitt edge methods examp
 <img src="https://user-images.githubusercontent.com/49571967/87052478-bde25b80-c1f8-11ea-9d52-4778ca699e80.jpg" width="45%"></img> 
 
 ## Usage
-* Open Linux terminal, navigate to the application folder and run ./edging \[inputname] \[outputname] \[edge_detection] \[threshold]
+* Open Linux terminal, navigate to the application folder and run ./edge \[inputname] \[outputname] \[edge_detection] \[threshold]
     * \[inputname] Is the origin Netpbm image name and extension. Must be in the same folder as the executable.
     * \[outputname] Is the destination Netpbm image name and extension. For a correct use, save the image with the .pgm extension.
-    * \[edge_detection] The edging method, must be \"sobel\" or \"prewitt\".
-    * \[threshold] The threshold to consider. Must be between \[0.001, 1.00\].
+    * \[edge_detection] The edge method, must be \"sobel\" or \"prewitt\".
+    * \[threshold] Threshold value to consider. Must be between \[0.001, 1.00\].
     
 ## Compilation
 * Compile via Linux make command
